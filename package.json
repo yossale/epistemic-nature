@@ -4,7 +4,8 @@
   "description": "Imitate \"state of nature\" for testing social epistemology concepts",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -19,5 +20,14 @@
   "bugs": {
     "url": "https://github.com/yossale/epistemic-nature/issues"
   },
-  "homepage": "https://github.com/yossale/epistemic-nature"
+  "homepage": "https://github.com/yossale/epistemic-nature",
+  "dependencies": {
+    "express": "~3.5.1",
+    "underscore": "~1.6.0"
+  },
+  "devDependencies": {
+    "mocha": "~1.18.2",
+    "chai": "~1.9.1",
+    "should": "~3.2.0-beta1"
+  }
 }
