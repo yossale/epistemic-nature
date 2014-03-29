@@ -1,0 +1,23 @@
+{
+  "name": "epistemic_nature",
+  "version": "0.0.1",
+  "description": "Imitate \"state of nature\" for testing social epistemology concepts",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yossale/epistemic-nature.git"
+  },
+  "keywords": [
+    "social",
+    "epistemology"
+  ],
+  "author": "Yossi Ittach",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yossale/epistemic-nature/issues"
+  },
+  "homepage": "https://github.com/yossale/epistemic-nature"
+}
