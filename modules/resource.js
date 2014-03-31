@@ -10,7 +10,7 @@ function Resource(resourceId, initialCapacity, consumptionRate){
 
 Resource.prototype.consume = function() {
 	if (this.isDepleted()) {
-		return -1
+		return null
 	} else {
 		this.capacity -= this.consumptionRate
 		return this.consumptionRate

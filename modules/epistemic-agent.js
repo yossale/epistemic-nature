@@ -20,19 +20,30 @@ EpistemicAgent.prototype.act = function () {
 	var self = this;
 
 	if (self.hasResources()) {
-		self.consumeResource(self.currentResources[0]);
+		self.consumeResource();
+		return Actions.CONSUME
 	} else {
 		if (Math.random() < self.pSearch) {
 			self.searchResource();
+			return Actions.SEARCH
 		} else {
 			self.askSomeone();
+			return Actions.ASK
 		}
 	}
 }
 
-EpistemicAgent.prototype.consumeResource = function (resource) {
+EpistemicAgent.prototype.consumeResource = function () {
 	var self = this;
-	self.energy += resource.consume() - self.costsTable[Actions.CONSUME]
+
+	var resource = self.currentResources[0]
+
+	var gainedEnergy = resource.consume()
+	if (gainedEnergy) {
+		self.energy += gainedEnergy - self.costsTable[Actions.CONSUME]
+	} else {
+		self.currentResources.splice(0,1)
+	}
 }
 
 EpistemicAgent.prototype.searchResource = function () {
