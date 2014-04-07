@@ -2,7 +2,7 @@ epistemic-nature
 ================
 
 Framework for testing "state of nature" assumptions in social epistemology
- 
+
 ## TODO
 0. move all the constants to the experiment config, including resource initial capacity and so forth
 1. Add the creation of new agents when <Condition> happens - when average energy is high?
