@@ -3,9 +3,11 @@
  */
 
 var Actions = require('./actions')
+var _ = require('underscore')
 
-function EpistemicAgent(experimentManager, energy, pBelieve, pLie, pSearch, costs, credibilityBias) {
+function EpistemicAgent(experimentManager, agentId, energy, pBelieve, pLie, pSearch, costs, credibilityBias) {
 	this.experimentManager = experimentManager
+	this.agentId = agentId;
 	this.energy = energy;
 	this.pBelieve = pBelieve;
 	this.pLie = pLie;
@@ -13,6 +15,7 @@ function EpistemicAgent(experimentManager, energy, pBelieve, pLie, pSearch, cost
 	this.credibilityBias = credibilityBias;
 	this.costsTable = costs;
 	this.currentResources = []
+	this.minimalEnergy = Math.min.apply(Math,_.values(costs))
 }
 
 EpistemicAgent.prototype.act = function () {
@@ -22,15 +25,21 @@ EpistemicAgent.prototype.act = function () {
 	if (self.hasResources()) {
 		self.consumeResource();
 		return Actions.CONSUME
-	} else {
-		if (Math.random() < self.pSearch) {
-			self.searchResource();
-			return Actions.SEARCH
-		} else {
-			self.askSomeone();
-			return Actions.ASK
-		}
 	}
+
+	if (Math.random() < self.pSearch) {
+		self.searchResource();
+		return Actions.SEARCH
+	} else {
+		self.askSomeone();
+		return Actions.ASK
+	}
+}
+
+EpistemicAgent.prototype.addResource = function (resource) {
+
+	this.currentResources.push(resource);
+
 }
 
 EpistemicAgent.prototype.consumeResource = function () {
@@ -42,7 +51,7 @@ EpistemicAgent.prototype.consumeResource = function () {
 	if (gainedEnergy) {
 		self.energy += gainedEnergy - self.costsTable[Actions.CONSUME]
 	} else {
-		self.currentResources.splice(0,1)
+		self.currentResources.splice(0, 1)
 	}
 }
 
@@ -96,6 +105,14 @@ EpistemicAgent.prototype.getCredibilityBias = function () {
 
 EpistemicAgent.prototype.getEnergy = function () {
 	return this.energy;
+}
+
+EpistemicAgent.prototype.getAgentId = function () {
+	return this.agentId;
+}
+
+EpistemicAgent.prototype.hasSurvived = function () {
+	return (this.getEnergy() >= this.minimalEnergy)
 }
 
 module.exports = EpistemicAgent

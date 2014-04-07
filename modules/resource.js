@@ -2,7 +2,9 @@
  * Created by yossale on 3/29/14.
  */
 
+
 function Resource(resourceId, initialCapacity, consumptionRate){
+
 	this.resourceId = resourceId;
 	this.capacity = initialCapacity;
 	this.consumptionRate = consumptionRate;
