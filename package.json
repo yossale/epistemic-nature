@@ -1,34 +1,33 @@
 {
-  "name": "epistemic_nature",
-  "version": "0.0.1",
-  "description": "Imitate \"state of nature\" for testing social epistemology concepts",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js",
-    "test": "mocha"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/yossale/epistemic-nature.git"
-  },
-  "keywords": [
-    "social",
-    "epistemology"
-  ],
-  "author": "Yossi Ittach",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/yossale/epistemic-nature/issues"
-  },
-  "homepage": "https://github.com/yossale/epistemic-nature",
-
-  "dependencies": {
-    "express": "~3.5.1",
-    "underscore": "~1.6.0"
-  },
-
-  "devDependencies": {
-    "mocha": "~1.18.2",
-    "chai": "~1.9.1"
-  }
+    "name": "epistemic_nature",
+    "version": "0.0.1",
+    "description": "Imitate \"state of nature\" for testing social epistemology concepts",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js",
+        "test": "mocha"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/yossale/epistemic-nature.git"
+    },
+    "keywords": [
+        "social",
+        "epistemology"
+    ],
+    "author": "Yossi Ittach",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/yossale/epistemic-nature/issues"
+    },
+    "homepage": "https://github.com/yossale/epistemic-nature",
+    "dependencies": {
+        "bonsai": "^0.4.2",
+        "express": "~3.5.1",
+        "underscore": "~1.6.0"
+    },
+    "devDependencies": {
+        "mocha": "~1.18.2",
+        "chai": "~1.9.1"
+    }
 }

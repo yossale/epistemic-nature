@@ -22,9 +22,10 @@ EpistemicAgent.prototype.act = function () {
 
 	var self = this;
 
-	if (self.hasResources()) {
+
+    if (self.hasResources()) {
 		self.consumeResource();
-		return Actions.CONSUME
+//		return Actions.CONSUME
 	}
 
 	if (Math.random() < self.pSearch) {
@@ -53,6 +54,8 @@ EpistemicAgent.prototype.consumeResource = function () {
 	} else {
 		self.currentResources.splice(0, 1)
 	}
+
+    report(self.agentId, "CONSUME", self.getEnergy());
 }
 
 EpistemicAgent.prototype.searchResource = function () {
@@ -64,6 +67,7 @@ EpistemicAgent.prototype.searchResource = function () {
 	if (resource) {
 		self.currentResources.push(resource)
 	}
+    report(self.agentId, "SEARCH", self.getEnergy())
 }
 
 EpistemicAgent.prototype.askSomeone = function () {
@@ -75,7 +79,7 @@ EpistemicAgent.prototype.askSomeone = function () {
 	if (otherAgent) {
 		var newResource = otherAgent.wouldYouShareResource()
 		if (newResource) {
-			var weightedPBelieve = otherAgent.getCredibilityBias() * Math.random();
+            var weightedPBelieve = otherAgent.getCredibilityBias() * self.pBelieve;
 			if (Math.random() > (1 - weightedPBelieve)) {
 				self.currentResources.push(newResource)
 			} else {
@@ -83,6 +87,7 @@ EpistemicAgent.prototype.askSomeone = function () {
 			}
 		}
 	}
+    report(self.agentId, "ASK", self.getEnergy())
 }
 
 EpistemicAgent.prototype.hasResources = function () {
@@ -113,6 +118,10 @@ EpistemicAgent.prototype.getAgentId = function () {
 
 EpistemicAgent.prototype.hasSurvived = function () {
 	return (this.getEnergy() >= this.minimalEnergy)
+}
+
+function report(agentId, action, energylevel) {
+    console.log([agentId, action, energylevel].join(","))
 }
 
 module.exports = EpistemicAgent

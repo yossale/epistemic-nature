@@ -6,20 +6,17 @@ var CONSTS = require('./consts')
 var ResourceManager = require('./resource-manager')
 var EpistemicAgent = require('./epistemic-agent')
 
-function UniverseInstance(maxSupportedCommunitySize, initialCommunitySize, pBelieve, pLie, pSearch, costs, credibilityBias) {
+function UniverseInstance(config) {
 
+    this.config = config;
 	this.agentIdCounter = 0;
-	this.maxSupportedCommunitySize = maxSupportedCommunitySize;
-	this.initialCommunitySize = initialCommunitySize;
-	this.pBelieve = pBelieve;
-	this.pLie = pLie;
-	this.pSearch = pSearch;
-	this.costs = costs;
-	this.credibilityBias = credibilityBias;
-	this.community = []
+    this.community = []
+
+    this.maxSupportedCommunitySize = config.maxSupportedCommunitySize;
+    this.initialCommunitySize = config.initialCommunitySize;
 
 	var requiredResources = this.maxSupportedCommunitySize / CONSTS.RESOURCE_SIZE
-	this.resourceManager = new ResourceManager(requiredResources)
+    this.resourceManager = new ResourceManager(requiredResources, config)
 }
 
 UniverseInstance.prototype.getCommunitySize = function() {
@@ -29,31 +26,40 @@ UniverseInstance.prototype.getCommunitySize = function() {
 function distributeResources(community, resourceManager) {
 
 	var size = community.length
-	community.forEach(function(agent){
-		if (Math.random() < (1 / size)) {
-			var resource = resourceManager.getUnassignedResource(1.0);
-			if (resource) {
-				agent.addResource()
-			}
-		}
+    for (i = 0; i < size; i++) {
+        var agent = community[i];
+        var resource = resourceManager.getUnassignedResource(1.0);
 
-	})
-
+        if (resource) {
+//            console.log("Assigned resource to agent: " + agent.getAgentId())
+            agent.addResource(resource)
+        } else {
+            return
+        }
+    }
 }
 
 UniverseInstance.prototype.run = function() {
 
 	var self = this;
-	var turnsCounter = 0
+    var turnsCounter = 0;
 
 	self.addAgents(self.initialCommunitySize);
+    self.resourceManager.updateResources();
 	distributeResources(self.community, self.resourceManager);
+
+    var statistics = { };
+    var maxSize = 0;
 
 	while(self.community.length > 0 && turnsCounter < 1000 ) {
 
 		turnsCounter++;
 
-		console.log("Turn: " + turnsCounter + " ,size: " + self.getCommunitySize())
+        if (self.getCommunitySize() > maxSize) {
+            maxSize = self.getCommunitySize()
+        }
+
+//		console.log("Turn: " + turnsCounter + " ,size: " + self.getCommunitySize())
 		self.resourceManager.updateResources();
 		var energySum = 0;
 		self.community.forEach(function(agent){
@@ -73,6 +79,11 @@ UniverseInstance.prototype.run = function() {
 			self.addAgents(newUsers)
 		}
 	}
+
+    statistics.turns = turnsCounter;
+    statistics.maxSize = maxSize;
+
+    return statistics;
 }
 
 UniverseInstance.prototype.addAgents = function(numUsers) {
@@ -84,23 +95,20 @@ UniverseInstance.prototype.addAgents = function(numUsers) {
 
 UniverseInstance.prototype.createAgent = function() {
 	var agentId = this.agentIdCounter++;
-	return new EpistemicAgent(this, agentId, 100, this.pBelieve, this.pLie, this.pSearch, this.costs, this.credibilityBias);
+    return new EpistemicAgent(this, agentId, this.config.initialUserEnergy, this.config.agent.pBelieve, this.config.agent.pLie, this.config.agent.pSearch, this.config.costs, this.config.agent.credibilityBias);
 }
 
 
 UniverseInstance.prototype.searchResource = function() {
-
 	var communitySize = this.getCommunitySize();
-	var pFindingResource = 1.0 / (communitySize * 10.0);
+//	var pFindingResource = 1.0 / (communitySize * 2.0);
+    var pFindingResource = 1.0 / 1000.0;
 	return this.resourceManager.getUnassignedResource(pFindingResource);
-
 }
 
 UniverseInstance.prototype.getRandomAgent = function() {
-
 	var randomAgent = Math.floor(Math.random() * this.getCommunitySize());
 	return this.community[randomAgent];
-
 }
 
 module.exports = UniverseInstance

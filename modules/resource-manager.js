@@ -30,7 +30,9 @@ ResourceManager.prototype.updateResources = function() {
 		var neededResources = self.requiredResources - currentResources
 		for (i=0; i<neededResources; i++) {
 			var resourceId = self.resourceIdCounter++;
-			var resource = new Resource(resourceId);
+            var initSize = self.config.resource.initialResourceCapacity;
+            var consumptionRate = self.config.resource.consumptionRate;
+            var resource = new Resource(resourceId, initSize, consumptionRate);
 			self.resources[resourceId] = resource;
 			self.unassignedResources[resourceId] = 0;
 		}

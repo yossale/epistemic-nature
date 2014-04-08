@@ -15,5 +15,7 @@ since a resource is only assigned to the precious few who asked for it before ot
 6. Before running the experiment, check and warn if (pBelieve * credibilityBias) is >= 1
 7. Connect to Heroku
 8. add graph representation to the size of community and the avg energy over turns
+9. Currently the main impact on the turns count is the P(findResource), and P(search). But if the parameters are equal,
+ the non-utopian is winning (I think). Maybe it's the distribution of resources we need to check?
 
 

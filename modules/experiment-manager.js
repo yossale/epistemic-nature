@@ -11,39 +11,68 @@ costs[Actions.ASK] = 3;
 costs[Actions.SEARCH] = 5;
 
 var experiments = {
-	allLiesExperiment: {
-		maxSupportedCommunitySize: 1000,
-		initialCommunitySize: 10,
-		pBelieve: 0.0,
-		pLie: 1.0,
-		pSearch: 0.5,
-		credibilityBias: 1.0,
-		costs: costs
-	},
 
-	utopiaExperiment: {
-		maxSupportedCommunitySize: 1000,
+    'utopian experiment': {
+        maxSupportedCommunitySize: 100,
+        initialCommunitySize: 10,
+        initialUserEnergy: 100,
+        costs: costs,
+        agent: {
+            pBelieve: 1.0,
+            pLie: 0.0,
+            pSearch: 0.5,
+            credibilityBias: 1.0
+        },
+        resource: {
+            initialResourceCapacity: 100,
+            consumptionRate: 10
+        }
+    },
+
+    'all Lies Experiment': {
+
+        maxSupportedCommunitySize: 100,
 		initialCommunitySize: 10,
-		pBelieve: 1.0,
-		pLie: 0.0,
-		pSearch: 0.5,
-		credibilityBias: 1.0,
-		costs: costs
+        initialUserEnergy: 100,
+        costs: costs,
+        agent: {
+            pBelieve: 0.0,
+            pLie: 1.0,
+            pSearch: 0.5,
+            credibilityBias: 1.0
+        },
+        resource: {
+            initialResourceCapacity: 100,
+            consumptionRate: 10
+        }
 	}
+
+
 }
 
+var statistics = {}
 Object.keys(experiments).forEach(function(experimentName){
 
-	var exp = experiments[experimentName]
-	var experiment = new UniverseInstance(exp.maxSupportedCommunitySize,
-		exp.initialCommunitySize,
-		exp.pBelieve,
-		exp.pLie,
-		exp.pSearch,
-		exp.costs,
-		exp.credibilityBias);
+    var runs = 1;
+    var sumTurns = 0;
+    var maxTurns = 0;
+    var exp = experiments[experimentName];
 
-	console.log("Running experiment: " + experimentName)
-	experiment.run()
+    for (index = 0; index < runs; index++) {
 
+        var experiment = new UniverseInstance(exp);
+
+        console.log("Running experiment: " + experimentName + " take: " + index);
+        var stats = experiment.run();
+        sumTurns += stats.turns;
+        if (stats.turns > maxTurns) {
+            maxTurns = stats.turns;
+        }
+    }
+    statistics[experimentName] = {avgTurns: (sumTurns / runs), maxTurns: maxTurns}
+})
+
+Object.keys(statistics).forEach(function (exp) {
+    var stats = statistics[exp]
+    console.log("Experiment: " + exp + " avgTurns: " + stats.avgTurns + ", maxTurns: " + stats.maxTurns)
 })
