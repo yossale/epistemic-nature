@@ -2,7 +2,7 @@
  * Created by yossale on 4/2/14.
  */
 
-var should = require('chai').should();
+var should = require('should');
 var Resource = require('../modules/resource')
 
 describe('Resource test suit', function () {

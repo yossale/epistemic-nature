@@ -2,9 +2,7 @@
  * Created by yossale on 4/2/14.
  */
 
-var should = require('chai').should();
-var EpistemicAgent = require('../modules/epistemic-agent')
-var Resource = require('../modules/resource')
+var should = require('should');
 var Actions = require('../modules/actions')
 var ResourceManager = require('../modules/resource-manager')
 
@@ -18,8 +16,8 @@ describe('Epistemic agent test suit', function () {
 	it('Test init', function () {
 		//Should search
 
-		var config = { resources: {
-			initialSize: 100,
+        var config = { resource: {
+            initialResourceCapacity: 100,
 			consumptionRate: 10
 		}}
 
@@ -60,8 +58,7 @@ describe('Epistemic agent test suit', function () {
 			consumptionRate: 10
 		}}
 
-		var newConfig
-		var rm = new ResourceManager(3)
+        var rm = new ResourceManager(3, config)
 		rm.updateResources();
 
 		var resource = rm.getUnassignedResource(1.0);

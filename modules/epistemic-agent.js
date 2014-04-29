@@ -22,19 +22,25 @@ EpistemicAgent.prototype.act = function () {
 
 	var self = this;
 
+    var actions = []
+
+    //Cost of living
+    self.energy -= 1;
 
     if (self.hasResources()) {
 		self.consumeResource();
-//		return Actions.CONSUME
+        actions.push(Actions.CONSUME);
 	}
 
 	if (Math.random() < self.pSearch) {
 		self.searchResource();
-		return Actions.SEARCH
+        actions.push(Actions.SEARCH);
 	} else {
 		self.askSomeone();
-		return Actions.ASK
+        actions.push(Actions.ASK);
 	}
+
+    return actions
 }
 
 EpistemicAgent.prototype.addResource = function (resource) {
@@ -46,34 +52,51 @@ EpistemicAgent.prototype.addResource = function (resource) {
 EpistemicAgent.prototype.consumeResource = function () {
 	var self = this;
 
-	var resource = self.currentResources[0]
+    var resource = self.currentResources[0];
+    var successful = false;
 
 	var gainedEnergy = resource.consume()
 	if (gainedEnergy) {
-		self.energy += gainedEnergy - self.costsTable[Actions.CONSUME]
+        self.energy += gainedEnergy - self.costsTable[Actions.CONSUME];
+        successful = true;
 	} else {
-		self.currentResources.splice(0, 1)
+        successful = false;
+        self.currentResources.splice(0, 1);
 	}
 
-    report(self.agentId, "CONSUME", self.getEnergy());
+    report(self.agentId, "CONSUME", self.getEnergy(), successful);
 }
 
 EpistemicAgent.prototype.searchResource = function () {
 	var self = this
 
-	self.energy -= self.costsTable[Actions.SEARCH]
+    if (self.energy >= self.costsTable[Actions.SEARCH]) {
+        self.energy -= self.costsTable[Actions.SEARCH]
+    } else {
+        return;
+    }
 
 	var resource = self.experimentManager.searchResource();
+
+    var successful = false
 	if (resource) {
-		self.currentResources.push(resource)
+        self.currentResources.push(resource);
+        successful = true;
 	}
-    report(self.agentId, "SEARCH", self.getEnergy())
+    report(self.agentId, "SEARCH", self.getEnergy(), successful)
 }
 
 EpistemicAgent.prototype.askSomeone = function () {
-	var self = this
+    var self = this;
 
-	self.energy -= self.costsTable[Actions.ASK]
+
+    if (self.energy >= self.costsTable[Actions.ASK]) {
+        self.energy -= self.costsTable[Actions.ASK];
+    } else {
+        return;
+    }
+
+    var successful = false;
 
 	var otherAgent = self.experimentManager.getRandomAgent();
 	if (otherAgent) {
@@ -82,12 +105,13 @@ EpistemicAgent.prototype.askSomeone = function () {
             var weightedPBelieve = otherAgent.getCredibilityBias() * self.pBelieve;
 			if (Math.random() > (1 - weightedPBelieve)) {
 				self.currentResources.push(newResource)
+                successful = true;
 			} else {
 				//Don't believe him
 			}
 		}
 	}
-    report(self.agentId, "ASK", self.getEnergy())
+    report(self.agentId, "ASK", self.getEnergy(), successful)
 }
 
 EpistemicAgent.prototype.hasResources = function () {
@@ -120,8 +144,8 @@ EpistemicAgent.prototype.hasSurvived = function () {
 	return (this.getEnergy() >= this.minimalEnergy)
 }
 
-function report(agentId, action, energylevel) {
-    console.log([agentId, action, energylevel].join(","))
+function report(agentId, action, energylevel, successful) {
+    console.log([agentId, action, energylevel, successful].join(","))
 }
 
 module.exports = EpistemicAgent

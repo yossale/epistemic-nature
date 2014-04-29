@@ -17,14 +17,15 @@ function ResourceManager(requiredResources, config) {
 ResourceManager.prototype.updateResources = function() {
 
 	var self = this;
-	var currentResources = Object.keys(self.resources).length
 
-	Object.keys(self.resources).forEach(function(resourceId){
-		if (self.resources[resourceId].isDepleted()) {
-			delete(self.resources[resourceId])
-			delete(self.unassignedResources[resourceId])
-		}
-	})
+    Object.keys(self.resources).forEach(function (resourceId) {
+        if (self.resources[resourceId].isDepleted()) {
+            delete(self.resources[resourceId])
+            delete(self.unassignedResources[resourceId])
+        }
+    })
+
+    var currentResources = Object.keys(self.resources).length
 
 	if (currentResources < self.requiredResources) {
 		var neededResources = self.requiredResources - currentResources
