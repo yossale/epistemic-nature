@@ -2,9 +2,9 @@
     "name": "epistemic_nature",
     "version": "0.0.1",
     "description": "Imitate \"state of nature\" for testing social epistemology concepts",
-    "main": "index.js",
+    "main": "server.js",
     "scripts": {
-        "start": "node index.js",
+        "start": "node server.js",
         "test": "mocha"
     },
     "repository": {
@@ -23,7 +23,7 @@
     "homepage": "https://github.com/yossale/epistemic-nature",
     "dependencies": {
         "bonsai": "^0.4.2",
-        "express": "~3.5.1",
+        "express": "^3.5.2",
         "underscore": "~1.6.0"
     },
     "devDependencies": {

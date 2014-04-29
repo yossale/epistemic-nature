@@ -2,21 +2,23 @@
  * Created by yossale on 3/29/14.
  */
 
-var CONSTS = require('./consts')
-var ResourceManager = require('./resource-manager')
-var EpistemicAgent = require('./epistemic-agent')
+var _ = require('underscore');
+var CONSTS = require('./consts');
+var ResourceManager = require('./resource-manager');
+var EpistemicAgent = require('./epistemic-agent');
+var defaultExperimentValues = require('./experiment_configurations/default-configuration');
 
 function UniverseInstance(config) {
 
-    this.config = config;
+    this.config = _.extend(defaultExperimentValues, config)
 	this.agentIdCounter = 0;
     this.community = []
 
-    this.maxSupportedCommunitySize = config.maxSupportedCommunitySize;
-    this.initialCommunitySize = config.initialCommunitySize;
+    this.maxSupportedCommunitySize = this.config.maxSupportedCommunitySize;
+    this.initialCommunitySize = this.config.initialCommunitySize;
 
 	var requiredResources = this.maxSupportedCommunitySize / CONSTS.RESOURCE_SIZE
-    this.resourceManager = new ResourceManager(requiredResources, config)
+    this.resourceManager = new ResourceManager(requiredResources, this.config)
 }
 
 UniverseInstance.prototype.getCommunitySize = function() {
@@ -101,8 +103,13 @@ UniverseInstance.prototype.createAgent = function() {
 
 UniverseInstance.prototype.searchResource = function() {
 	var communitySize = this.getCommunitySize();
-//	var pFindingResource = 1.0 / (communitySize * 2.0);
-    var pFindingResource = 1.0 / 1000.0;
+
+    var pFindingResource = 1.0 / (communitySize * 2.0);
+//    var pFindingResource = 1.0 / 1000.0;
+//    var pFindingResource = 0.1;
+
+
+
 	return this.resourceManager.getUnassignedResource(pFindingResource);
 }
 
