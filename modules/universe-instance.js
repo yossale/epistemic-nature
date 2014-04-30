@@ -11,7 +11,7 @@ var defaultExperimentValues = require('./experiment_configurations/default-confi
 function UniverseInstance(config) {
 
     this.config = _.extend(defaultExperimentValues, config)
-	this.agentIdCounter = 0;
+    this.agentIdCounter = 0;
     this.community = []
 
     this.maxSupportedCommunitySize = this.config.maxSupportedCommunitySize;
@@ -22,16 +22,16 @@ function UniverseInstance(config) {
     this.probabilityOfFindingNewSource = this.config.probabilityOfFindingNewSource;
 }
 
-UniverseInstance.prototype.getCommunitySize = function() {
-	return this.community.length;
+UniverseInstance.prototype.getCommunitySize = function () {
+    return this.community.length;
 }
 
 function distributeResources(community, resourceManager) {
 
-	var size = community.length
+    var size = community.length
     for (i = 0; i < size; i++) {
         var agent = community[i];
-        var resource = resourceManager.getUnassignedResource(1.0);
+        var resource = resourceManager.getResourceByProbability(1.0);
 
         if (resource) {
 //            console.log("Assigned resource to agent: " + agent.getAgentId())
@@ -42,83 +42,114 @@ function distributeResources(community, resourceManager) {
     }
 }
 
-UniverseInstance.prototype.run = function() {
+//experimentRunner.prototype.run = function (times) {
+//
+//    times = times || 1;
+//    console.log(times);
+//
+//    var self = this;
+//
+//    var statistics = [];
+//
+//    for(i=0; i<times; i++) {
+//
+//
+//        statistics.push(self.runSingleExperiment())
+//    }
+//
+//    return statistics
+//}
 
-	var self = this;
+UniverseInstance.prototype.runSingleExperiment = function () {
+
+    var self = this;
     var turnsCounter = 0;
 
-	self.addAgents(self.initialCommunitySize);
+    self.addAgents(self.initialCommunitySize);
     self.resourceManager.updateResources();
-	distributeResources(self.community, self.resourceManager);
+    distributeResources(self.community, self.resourceManager);
 
     var maxSize = 0;
     var communitySizeSum = 0;
+    var statistics = [];
 
-	while(self.community.length > 0 && turnsCounter < 1000 ) {
+    while (self.community.length > 0 && turnsCounter < 1000) {
 
-		turnsCounter++;
+        turnsCounter++;
 
         communitySizeSum += self.getCommunitySize();
         if (self.getCommunitySize() > maxSize) {
             maxSize = self.getCommunitySize()
         }
 
-		self.resourceManager.updateResources();
-		var energySum = 0;
-		self.community.forEach(function(agent){
-			if (!agent.hasSurvived()) {
-				var index = self.community.indexOf(agent)
-				self.community.splice(index,1)
-			} else {
-				agent.act();
+        self.resourceManager.updateResources();
+        var energySum = 0;
+        self.community.forEach(function (agent) {
+            if (!agent.hasSurvived()) {
+                var index = self.community.indexOf(agent)
+                self.community.splice(index, 1)
+            } else {
+                agent.act();
                 energySum += agent.getEnergy();
-			}
-		})
+            }
+        })
 
         var avgEnergy = energySum / self.community.length;
-        console.log("Turn: " + turnsCounter + ", Size: " + self.getCommunitySize() + ", avgEnergyLevel: " + avgEnergy);
+//        console.log("Turn: " + turnsCounter + ", Size: " + self.getCommunitySize() + ", avgEnergyLevel: " + avgEnergy);
 
         if (avgEnergy > self.config.initialAgentEnergy && self.config.createNewAgentsWhenSurplus) {
             var newUsers = (avgEnergy - self.config.initialAgentEnergy) / 10
-			self.addAgents(newUsers)
-		}
-	}
+            self.addAgents(newUsers)
+        }
+    }
 
-    var statistics = {
+    var stats = {};
 
-    };
+    stats.turns = turnsCounter;
+    stats.avgCommunitySize = communitySizeSum / turnsCounter;
+    stats.maxSize = maxSize;
 
-    statistics.turns = turnsCounter;
-    statistics.avgCommunitySize = communitySizeSum / turnsCounter;
-    statistics.maxSize = maxSize;
-
-    return statistics;
+    return stats;
 }
 
-UniverseInstance.prototype.addAgents = function(numUsers) {
-	var self = this;
-	for (i=0; i<numUsers; i++) {
-		self.community.push(self.createAgent())
-	}
+UniverseInstance.prototype.addAgents = function (numUsers) {
+    var self = this;
+    for (i = 0; i < numUsers; i++) {
+        self.community.push(self.createAgent())
+    }
 }
 
-UniverseInstance.prototype.createAgent = function() {
-	var agentId = this.agentIdCounter++;
+UniverseInstance.prototype.createAgent = function () {
+    var agentId = this.agentIdCounter++;
     return new EpistemicAgent(this, agentId, this.config.initialAgentEnergy, this.config.agent.pBelieve, this.config.agent.pLie, this.config.agent.pSearch, this.config.costs, this.config.agent.credibilityBias);
 }
 
 
-UniverseInstance.prototype.searchResource = function() {
-	var communitySize = this.getCommunitySize();
+UniverseInstance.prototype.searchResource = function () {
+    var communitySize = this.getCommunitySize();
     var pFindingResource = this.probabilityOfFindingNewSource(communitySize);
 
-	return this.resourceManager.getUnassignedResource(pFindingResource);
+    return this.resourceManager.getResourceByProbability(pFindingResource);
 }
 
-UniverseInstance.prototype.getRandomAgent = function() {
-	var randomAgent = Math.floor(Math.random() * this.getCommunitySize());
-	return this.community[randomAgent];
+UniverseInstance.prototype.getRandomAgent = function () {
+    var randomAgent = Math.floor(Math.random() * this.getCommunitySize());
+    return this.community[randomAgent];
 }
 
-module.exports = UniverseInstance
+function runExperiments(config, times) {
+
+    times = times || 1;
+    var statistics = [];
+
+    for (index = 0; index < times; index++) {
+        var universe = new UniverseInstance(config);
+        statistics.push(universe.runSingleExperiment());
+    }
+
+    return statistics
+
+}
+
+module.exports = runExperiments;
 
