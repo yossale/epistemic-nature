@@ -17,8 +17,9 @@ function UniverseInstance(config) {
     this.maxSupportedCommunitySize = this.config.maxSupportedCommunitySize;
     this.initialCommunitySize = this.config.initialCommunitySize;
 
-	var requiredResources = this.maxSupportedCommunitySize / CONSTS.RESOURCE_SIZE
-    this.resourceManager = new ResourceManager(requiredResources, this.config)
+    var requiredResources = this.maxSupportedCommunitySize / CONSTS.RESOURCE_SIZE;
+    this.resourceManager = new ResourceManager(requiredResources, this.config);
+    this.probabilityOfFindingNewSource = this.config.probabilityOfFindingNewSource;
 }
 
 UniverseInstance.prototype.getCommunitySize = function() {
@@ -50,18 +51,18 @@ UniverseInstance.prototype.run = function() {
     self.resourceManager.updateResources();
 	distributeResources(self.community, self.resourceManager);
 
-    var statistics = { };
     var maxSize = 0;
+    var communitySizeSum = 0;
 
 	while(self.community.length > 0 && turnsCounter < 1000 ) {
 
 		turnsCounter++;
 
+        communitySizeSum += self.getCommunitySize();
         if (self.getCommunitySize() > maxSize) {
             maxSize = self.getCommunitySize()
         }
 
-//		console.log("Turn: " + turnsCounter + " ,size: " + self.getCommunitySize())
 		self.resourceManager.updateResources();
 		var energySum = 0;
 		self.community.forEach(function(agent){
@@ -70,19 +71,25 @@ UniverseInstance.prototype.run = function() {
 				self.community.splice(index,1)
 			} else {
 				agent.act();
-				energySum += Math.max(agent.getEnergy(),0);
+                energySum += agent.getEnergy();
 			}
 		})
 
-		var avgEnergy = energySum / self.community.length
+        var avgEnergy = energySum / self.community.length;
+        console.log("Turn: " + turnsCounter + ", Size: " + self.getCommunitySize() + ", avgEnergyLevel: " + avgEnergy);
 
-		if (avgEnergy > 100) {
-			var newUsers = (avgEnergy - 100) / 10
+        if (avgEnergy > self.config.initialAgentEnergy && self.config.createNewAgentsWhenSurplus) {
+            var newUsers = (avgEnergy - self.config.initialAgentEnergy) / 10
 			self.addAgents(newUsers)
 		}
 	}
 
+    var statistics = {
+
+    };
+
     statistics.turns = turnsCounter;
+    statistics.avgCommunitySize = communitySizeSum / turnsCounter;
     statistics.maxSize = maxSize;
 
     return statistics;
@@ -97,18 +104,13 @@ UniverseInstance.prototype.addAgents = function(numUsers) {
 
 UniverseInstance.prototype.createAgent = function() {
 	var agentId = this.agentIdCounter++;
-    return new EpistemicAgent(this, agentId, this.config.initialUserEnergy, this.config.agent.pBelieve, this.config.agent.pLie, this.config.agent.pSearch, this.config.costs, this.config.agent.credibilityBias);
+    return new EpistemicAgent(this, agentId, this.config.initialAgentEnergy, this.config.agent.pBelieve, this.config.agent.pLie, this.config.agent.pSearch, this.config.costs, this.config.agent.credibilityBias);
 }
 
 
 UniverseInstance.prototype.searchResource = function() {
 	var communitySize = this.getCommunitySize();
-
-    var pFindingResource = 1.0 / (communitySize * 2.0);
-//    var pFindingResource = 1.0 / 1000.0;
-//    var pFindingResource = 0.1;
-
-
+    var pFindingResource = this.probabilityOfFindingNewSource(communitySize);
 
 	return this.resourceManager.getUnassignedResource(pFindingResource);
 }

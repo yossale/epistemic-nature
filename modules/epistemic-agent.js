@@ -14,8 +14,8 @@ function EpistemicAgent(experimentManager, agentId, energy, pBelieve, pLie, pSea
 	this.pSearch = pSearch;
 	this.credibilityBias = credibilityBias;
 	this.costsTable = costs;
-	this.currentResources = []
-	this.minimalEnergy = Math.min.apply(Math,_.values(costs))
+    this.currentResources = [];
+    this.minimalEnergy = Math.min.apply(Math, _.values(costs));
 }
 
 EpistemicAgent.prototype.act = function () {
@@ -144,8 +144,8 @@ EpistemicAgent.prototype.hasSurvived = function () {
 	return (this.getEnergy() >= this.minimalEnergy)
 }
 
-function report(agentId, action, energylevel, successful) {
-    console.log([agentId, action, energylevel, successful].join(","))
+function report(agentId, action, energyLevel, successful) {
+//    console.log([agentId, action, energyLevel, successful].join(","))
 }
 
 module.exports = EpistemicAgent

@@ -9,7 +9,14 @@ var Actions = require('./actions')
 var costs = {}
 costs[Actions.CONSUME] = 1;
 costs[Actions.ASK] = 3;
-costs[Actions.SEARCH] = 100;
+costs[Actions.SEARCH] = 15;
+
+var probabilityOfFindingNewSource = function (communitySize) {
+//    return 1 / (10 * communitySize);
+    return 1.0;
+}
+
+var createNewAgentsWhenSurplus = true;
 
 var experiments = {
 
@@ -19,18 +26,22 @@ var experiments = {
             pLie: 0.0,
             pSearch: (1 - costs[Actions.SEARCH] / (costs[Actions.SEARCH] + costs[Actions.ASK])),
             credibilityBias: 1.0
-        }
+        },
+        probabilityOfFindingNewSource: probabilityOfFindingNewSource,
+        createNewAgentsWhenSurplus: createNewAgentsWhenSurplus
+    },
+
+    'dystopian experiment': {
+        agent: {
+            pBelieve: 0.0,
+            pLie: 1.0,
+            pSearch: (1 - costs[Actions.SEARCH] / (costs[Actions.SEARCH] + costs[Actions.ASK])),
+            credibilityBias: 1.0
+        },
+        probabilityOfFindingNewSource: probabilityOfFindingNewSource,
+        createNewAgentsWhenSurplus: createNewAgentsWhenSurplus
     }
 
-//    'dystopian experiment': {
-//        agent: {
-//            pBelieve: 0.0,
-//            pLie: 1.0,
-//            pSearch: (1 - costs[Actions.SEARCH] / (costs[Actions.SEARCH] + costs[Actions.ASK])),
-//            credibilityBias: 1.0
-//        }
-//    },
-//
 //    'dystopian experiment 2': {
 //        agent: {
 //            pBelieve: 0.0,
@@ -64,9 +75,10 @@ Object.keys(experiments).forEach(function (experimentName) {
 
     var expConfig = experiments[experimentName]
 
-    var runs = 1;
+    var runs = 1000;
     var sumTurns = 0;
     var maxTurns = 0;
+    var sumAvgCommunitySize = 0;
 
     for (index = 0; index < runs; index++) {
 
@@ -78,11 +90,14 @@ Object.keys(experiments).forEach(function (experimentName) {
         if (stats.turns > maxTurns) {
             maxTurns = stats.turns;
         }
+        sumAvgCommunitySize += stats.avgCommunitySize
+
     }
-    statistics[experimentName] = {avgTurns: (sumTurns / runs), maxTurns: maxTurns}
+    statistics[experimentName] = {avgTurns: (sumTurns / runs), maxTurns: maxTurns, avgCommunitySize: (sumAvgCommunitySize / runs)}
 })
 
 Object.keys(statistics).forEach(function (exp) {
     var stats = statistics[exp]
-    console.log("Experiment: " + exp + " avgTurns: " + stats.avgTurns + ", maxTurns: " + stats.maxTurns)
+    console.log("Experiment: " + exp + " avgTurns: " + stats.avgTurns + ", maxTurns: "
+        + stats.maxTurns + ", avgCommunitySize: " + stats.avgCommunitySize)
 })

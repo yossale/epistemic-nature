@@ -12,8 +12,9 @@ costs[Actions.SEARCH] = 10;
 var defaultExperimentValues = {
     maxSupportedCommunitySize: 100,
     initialCommunitySize: 10,
-    initialUserEnergy: 100,
+    initialAgentEnergy: 100,
     costs: costs,
+    createNewAgentsWhenSurplus: true,
     agent: {
         pBelieve: 0.5,
         pLie: 0.5,
@@ -23,6 +24,9 @@ var defaultExperimentValues = {
     resource: {
         initialResourceCapacity: 100,
         consumptionRate: 10
+    },
+    probabilityOfFindingNewSource: function (communitySize) {
+        return 1.0;
     }
 }
 
