@@ -42,24 +42,6 @@ function distributeResources(community, resourceManager) {
     }
 }
 
-//experimentRunner.prototype.run = function (times) {
-//
-//    times = times || 1;
-//    console.log(times);
-//
-//    var self = this;
-//
-//    var statistics = [];
-//
-//    for(i=0; i<times; i++) {
-//
-//
-//        statistics.push(self.runSingleExperiment())
-//    }
-//
-//    return statistics
-//}
-
 UniverseInstance.prototype.runSingleExperiment = function () {
 
     var self = this;

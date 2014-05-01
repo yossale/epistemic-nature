@@ -2,17 +2,30 @@
 <!doctype html>
 
 <!-- ASSIGN OUR ANGULAR MODULE -->
-<html ng-app="scotchTodo">
+
 <head>
     <!-- META -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- SPELLS -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="js/chart.min.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="http://code.highcharts.com/modules/exporting.js"></script>
+
+    <!-- load jquery -->
+    <!--<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>-->
+    <!-- load angular -->
+    <!--<script src="core.js"></script>-->
+
+
     <!-- Optimize mobile viewport -->
 
     <title>Node/Angular Todo App</title>
 
     <!-- SCROLLS -->
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/rules.css" type="text/css">
     <!-- load bootstrap -->
     <style>
         html {
@@ -28,62 +41,325 @@
         }
     </style>
 
-    <!-- SPELLS -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-    <!-- load jquery -->
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
-    <!-- load angular -->
-    <script src="core.js"></script>
+    <script>
+        //This will be called when the document loads
+        $(document).ready(function () {
+            $('#frm_submit_btn').click(function () {
+                //<img data-src="holder.js/200x200" class="img-thumbnail" alt="A generic square placeholder image with a white border around it, making it resemble a photograph taken with an old instant camera">
+
+                $("#myChart_4").append($('<img data-src="img/ajax-loader-gif.gif" class="img-thumbnail" alt="Please wait">'))
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "api/simulate",
+                    data: {
+                        expName: $('#expName').val(),
+                        pBelieve: $('#pBelieve').val(),
+                        pLie: $('#pLie').val(),
+                        searchCost: $('#searchCost').val(),
+                        askCost: $('#askCost').val()
+                    },
+                    success: function (data) {
+
+                        alert("data: " + data);
+                        $(function () {
+                            $('#myChart_4').highcharts({
+                                title: {
+                                    text: 'Simulation Results'
+//                                        x: -20 //center
+                                },
+//                                    subtitle: {
+//                                        text: 'Source: WorldClimate.com',
+//                                        x: -20
+//                                    },
+                                xAxis: {
+                                    categories: data.categories
+                                },
+                                yAxis: {
+                                    title: {
+                                        text: 'Temperature (°C)'
+                                    },
+                                    plotLines: [
+                                        {
+                                            value: 0,
+                                            width: 1,
+                                            color: '#808080'
+                                        }
+                                    ]
+                                },
+                                tooltip: {
+                                    valueSuffix: '°C'
+                                },
+                                legend: {
+                                    layout: 'vertical',
+                                    align: 'right',
+                                    verticalAlign: 'middle',
+                                    borderWidth: 0
+                                },
+                                series: data.series
+                            });
+                        });
+
+                    }
+                })
+            })
+        })
+    </script>
+
 
 </head>
 <!-- SET THE CONTROLLER AND GET ALL TODOS -->
 <body ng-controller="mainController">
 <div class="container">
 
-    <!-- HEADER AND TODO COUNT -->
-    <div class="jumbotron text-center">
-        <h1>Epistemic Nature Simulator</h1>
+<!-- HEADER AND TODO COUNT -->
+<div class="jumbotron text-center">
+    <div class="container">
+        <h1>Epistemic nature simulator</h1>
+
+        <p>This is a template for a simple marketing or informational website. It includes a large callout called a
+            jumbotron and three supporting pieces of content. Use it as a starting point to create something more
+            unique.</p>
+        <!--<p><a class="btn btn-primary btn-lg" role="button">Learn more &raquo;</a></p>-->
     </div>
+</div>
 
-    <!-- FORM TO CREATE TODOS -->
-    <div id="todo-form" class="row">
-        <div class="col-sm-8 col-sm-offset-2 text-center">
-            <form>
-                <div class="form-group">
+<div class="container">
+    <!-- Example row of columns -->
+    <div class="row">
+        <div class="col-md-4">
+            <h2>Experiment no. 1 - Utopia</h2>
 
-                    <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
-                    <input type="text" class="form-control input-lg text-center" placeholder="Experiment name"
-                           ng-model="formData.expName">
-                    pBelieve: <input type="number" min="0" max="1.0" class="form-control input-lg text-center"
-                                     placeholder="0.5" ng-model="formData.pBelieve" required>
-                    pLie: <input type="number" min="0" max="1.0" class="form-control input-lg text-center"
-                                 placeholder="0.5" ng-model="formData.pLie">
-                    Search Cost: <input type="number" min="0" max="100" class="form-control input-lg text-center"
-                                        placeholder="10" value="10" ng-model="formData.searchCost">
-                    Asking Cost: <input type="number" min="0" max="100" class="form-control input-lg text-center"
-                                        placeholder="3" ng-model="formData.askingCost">
+            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor
+                mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna
+                mollis euismod. Donec sed odio dui. </p>
 
-                </div>
+            <canvas id="myChart_1" width="400" height="400"></canvas>
 
-                <!-- createToDo() WILL CREATE NEW TODOS -->
-                <button type="submit" class="btn btn-primary btn-lg" ng-click="createTodo()">Run Experiment</button>
-            </form>
+            <!--<p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>-->
+        </div>
+        <div class="col-md-4">
+            <h2>Experiment no. 2 - Reality</h2>
+
+            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor
+                mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna
+                mollis euismod. Donec sed odio dui. </p>
+
+            <canvas id="myChart_2" width="400" height="400"></canvas>
+            <!--<p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>-->
+        </div>
+        <div class="col-md-4">
+            <h2>Experiment no. 2 - Dystopia</h2>
+
+            <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula
+                porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh,
+                ut fermentum massa justo sit amet risus.</p>
+
+            <canvas id="myChart_3" width="400" height="400"></canvas>
+            <!--<p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>-->
         </div>
     </div>
+    <p></p>
 
-    <!-- TODO LIST -->
-    <!--<div id="todo-list" class="row">-->
-    <!--<div class="col-sm-4 col-sm-offset-4">-->
+</div>
+<script>
+    var data = {
+        labels: ["January", "February", "March", "April", "May", "June", "July"],
+        datasets: [
+            {
+                fillColor: "rgba(220,220,220,0.5)",
+                strokeColor: "rgba(220,220,220,1)",
+                pointColor: "rgba(220,220,220,1)",
+                pointStrokeColor: "#fff",
+                data: [65, 59, 90, 81, 56, 55, 40]
+            },
+            {
+                fillColor: "rgba(151,187,205,0.5)",
+                strokeColor: "rgba(151,187,205,1)",
+                pointColor: "rgba(151,187,205,1)",
+                pointStrokeColor: "#fff",
+                data: [28, 48, 40, 19, 96, 27, 100]
+            }
+        ]
+    }
 
-    <!--&lt;!&ndash; LOOP OVER THE TODOS IN $scope.todos &ndash;&gt;-->
-    <!--<div class="checkbox" ng-repeat="todo in todos">-->
-    <!--<label>-->
-    <!--<input type="checkbox" ng-click="deleteTodo(todo._id)"> {{ todo.text }}-->
-    <!--</label>-->
-    <!--</div>-->
+    var options = {
 
-    <!--</div>-->
-    <!--</div>-->
+        //Boolean - If we show the scale above the chart data
+        scaleOverlay: false,
+
+        //Boolean - If we want to override with a hard coded scale
+        scaleOverride: false,
+
+        //** Required if scaleOverride is true **
+        //Number - The number of steps in a hard coded scale
+        scaleSteps: null,
+        //Number - The value jump in the hard coded scale
+        scaleStepWidth: null,
+        //Number - The scale starting value
+        scaleStartValue: null,
+
+        //String - Colour of the scale line
+        scaleLineColor: "rgba(0,0,0,.1)",
+
+        //Number - Pixel width of the scale line
+        scaleLineWidth: 1,
+
+        //Boolean - Whether to show labels on the scale
+        scaleShowLabels: true,
+
+        //Interpolated JS string - can access value
+        scaleLabel: "<%=value%>",
+
+        //String - Scale label font declaration for the scale label
+        scaleFontFamily: "'Arial'",
+
+        //Number - Scale label font size in pixels
+        scaleFontSize: 12,
+
+        //String - Scale label font weight style
+        scaleFontStyle: "normal",
+
+        //String - Scale label font colour
+        scaleFontColor: "#666",
+
+        ///Boolean - Whether grid lines are shown across the chart
+        scaleShowGridLines: true,
+
+        //String - Colour of the grid lines
+        scaleGridLineColor: "rgba(0,0,0,.05)",
+
+        //Number - Width of the grid lines
+        scaleGridLineWidth: 1,
+
+        //Boolean - Whether the line is curved between points
+        bezierCurve: true,
+
+        //Boolean - Whether to show a dot for each point
+        pointDot: true,
+
+        //Number - Radius of each point dot in pixels
+        pointDotRadius: 3,
+
+        //Number - Pixel width of point dot stroke
+        pointDotStrokeWidth: 1,
+
+        //Boolean - Whether to show a stroke for datasets
+        datasetStroke: true,
+
+        //Number - Pixel width of dataset stroke
+        datasetStrokeWidth: 2,
+
+        //Boolean - Whether to fill the dataset with a colour
+        datasetFill: true,
+
+        //Boolean - Whether to animate the chart
+        animation: true,
+
+        //Number - Number of animation steps
+        animationSteps: 60,
+
+        //String - Animation easing effect
+        animationEasing: "easeOutQuart",
+
+        //Function - Fires when the animation is complete
+        onAnimationComplete: null
+
+    }
+
+    //Get context with jQuery - using jQuery's .get() method.
+    var ctx = $("#myChart_1").get(0).getContext("2d");
+    //This will get the first returned node in the jQuery collection.
+    //        var myNewChart = new Chart(ctx);
+
+    new Chart(ctx).Line(data, options);
+
+    //Get context with jQuery - using jQuery's .get() method.
+    ctx = $("#myChart_2").get(0).getContext("2d");
+    //This will get the first returned node in the jQuery collection.
+    new Chart(ctx).Bar(data, options);
+
+    //Get context with jQuery - using jQuery's .get() method.
+    ctx = $("#myChart_3").get(0).getContext("2d");
+    //This will get the first returned node in the jQuery collection.
+    new Chart(ctx).Radar(data, options);
+
+</script>
+
+<!-- FORM TO CREATE TODOS -->
+<div id="todo-form" class="container">
+
+    <div class="page-header">
+        <h1>Try it yourself</h1>
+
+        <p>Some message explaining what's going on</p>
+
+    </div>
+
+    <div class="container">
+        <!-- Example row of columns -->
+        <div class="row">
+            <div class="col-md-4">
+                <h2>Enter parameters</h2>
+
+                <form>
+                    <div class="form-group">
+
+                        <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
+                        pBelieve: <input id="pBelieve" type="number" min="0.0" max="1.0" value="0.5"
+                                         class="form-control input-lg text-center"
+                                         placeholder="0.5" required>
+                        pLie: <input id="pLie" type="number" min="0.0" max="1.0"
+                                     class="form-control input-lg text-center"
+                                     placeholder="0.5" value="0.5">
+                        Search Cost: <input id="searchCost" type="number" min="1" max="100"
+                                            class="form-control input-lg text-center"
+                                            placeholder="10" value="15">
+                        Asking Cost: <input id="askCost" type="number" min="1" max="100"
+                                            class="form-control input-lg text-center"
+                                            placeholder="3" value="3">
+
+                    </div>
+
+                    <button type="button" class="btn btn-primary btn-lg" id="frm_submit_btn">Run Experiment
+                    </button>
+                </form>
+
+
+            </div>
+            <!--<div class="col-md-8">-->
+            <div>
+                <h2>Results</h2>
+
+                <div id="myChart_4" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<hr>
+
+<footer>
+    <!--<iframe src="https://githubbadge.appspot.com/yossale"-->
+    <!--style="border: 0;height: 142px;width: 200px;overflow: hidden;" frameBorder="0"></iframe>-->
+    <!--<p>&copy; Yossi Ittach 2014</p>-->
+</footer>
+
+<!-- TODO LIST -->
+<!--<div id="todo-list" class="row">-->
+<!--<div class="col-sm-4 col-sm-offset-4">-->
+
+<!--&lt;!&ndash; LOOP OVER THE TODOS IN $scope.todos &ndash;&gt;-->
+<!--<div class="checkbox" ng-repeat="todo in todos">-->
+<!--<label>-->
+<!--<input type="checkbox" ng-click="deleteTodo(todo._id)"> {{ todo.text }}-->
+<!--</label>-->
+<!--</div>-->
+
+<!--</div>-->
+<!--</div>-->
 
 </div>
 

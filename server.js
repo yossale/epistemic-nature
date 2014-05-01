@@ -1,8 +1,10 @@
 // set up ========================
 var express = require('express');
 var app = express();
+var DefaultConfiguration = require('./modules/experiment_configurations/default-configuration.js')
+var Actions = require('./modules/actions')
 
-var UniverseInstance = require('./modules/universe-instance')
+var runExperiments = require('./modules/universe-instance')
 
 // configuration =================
 
@@ -23,54 +25,97 @@ app.get('/', function (req, res) {
 });
 
 // api routes
+app.post('/api/simulate', function (req, res) {
 
-// get all todos
-app.get('/api/todos', function (req, res) {
-    console.log("api/todos")
-    var todos = [
-        {text: 'text A'},
-        {text: 'text B'}
-    ];
-    res.json(todos); // return all todos in JSON format
+    var params = req.body;
+    console.log("api/todos: Request data recieved:" + params);
+
+    var costs = DefaultConfiguration.costs;
+    costs[Actions.SEARCH] = params.searchCost;
+    costs[Actions.ASK] = params.askCost;
+
+    var expConfiguration = {
+        agent: {
+            pBelieve: params.pBelieve,
+            pLie: params.pLie,
+            pSearch: (1 - costs[Actions.SEARCH] / (costs[Actions.SEARCH] + costs[Actions.ASK])),
+            credibilityBias: 1.0
+        },
+        costs: costs
+        //    probabilityOfFindingNewSource: probabilityOfFindingNewSource,
+        //    createNewAgentsWhenSurplus: createNewAgentsWhenSurplus
+    }
+
+    var results = runExperiments(expConfiguration, 100);
+
+    var graphData = simulationResultsToDataSets(results);
+
+    res.json(graphData);
 });
 
-// create todo and send back all todos after creation
-app.post('/api/todos', function (req, res) {
 
-    var expConf = {};
-    var newExperiment =
+function simulationResultsToDataSets(results) {
 
-        Todo.create({
-            text: req.body.text,
-            done: false
-        }, function (err, todo) {
-            if (err)
-                res.send(err);
+    var categories = [];
+    var turns = { name: 'Turns', data: [], type: 'area'};
+    var size = { name: 'Avg Community Size', data: []};
+    var avg = { name: 'Average Turns', data: [], type: 'spline'};
 
-            // get and return all the todos after you create another
-            Todo.find(function (err, todos) {
-                if (err)
-                    res.send(err)
-                res.json(todos);
-            });
-        });
+    var avgTurns = 0;
 
-});
+    for (index = 0; index < results.length; index++) {
 
-// delete a todo
-app.delete('/api/todos/:todo_id', function (req, res) {
-    Todo.remove({
-        _id: req.params.todo_id
-    }, function (err, todo) {
-        if (err)
-            res.send(err);
+        var stat = results[index]
 
-        // get and return all the todos after you create another
-        Todo.find(function (err, todos) {
-            if (err)
-                res.send(err)
-            res.json(todos);
-        });
+        categories.push(index);
+
+        /**
+         * stats.turns = turnsCounter;
+         stats.avgCommunitySize = communitySizeSum / turnsCounter;
+         stats.maxSize = maxSize;
+         */
+        avgTurns += stat.turns;
+        turns.data.push(stat.turns);
+        size.data.push(stat.avgCommunitySize);
+    }
+
+    avgTurns = avgTurns / results.length
+    avg.data = Array.apply(null, {length: results.length}).map(Number.call, function () {
+        return avgTurns
     });
-});
+
+    return {
+        categories: categories,
+        series: [turns, size, avg]
+    }
+}
+
+//// get all todos
+//app.get('/api/todos', function (req, res) {
+//    console.log("api/todos")
+//    var conf = req.data;
+//    console.log("Request data recieved:" + data);
+//    var data = {
+//        labels: ["January", "February", "March", "April", "May", "June", "July"],
+//        datasets: [
+//            {
+//                fillColor: "rgba(220,220,220,0.5)",
+//                strokeColor: "rgba(220,220,220,1)",
+//                pointColor: "rgba(220,220,220,1)",
+//                pointStrokeColor: "#fff",
+//                data: [65, 59, 90, 81, 56, 55, 40]
+//            },
+//            {
+//                fillColor: "rgba(151,187,205,0.5)",
+//                strokeColor: "rgba(151,187,205,1)",
+//                pointColor: "rgba(151,187,205,1)",
+//                pointStrokeColor: "#fff",
+//                data: [28, 48, 40, 19, 96, 27, 100]
+//            }
+//        ]
+//    }
+//    res.json(data); // return all todos in JSON format
+//});
+
+
 
