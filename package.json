@@ -20,6 +20,9 @@
     "bugs": {
         "url": "https://github.com/yossale/epistemic-nature/issues"
     },
+    "engines": {
+        "node": "0.10.26"
+    },
     "homepage": "https://github.com/yossale/epistemic-nature",
     "dependencies": {
         "bonsai": "^0.4.2",
