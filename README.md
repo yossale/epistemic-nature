@@ -10,7 +10,7 @@ Framework for testing "state of nature" assumptions in social epistemology
  the non-utopian is winning (I think). Maybe it's the distribution of resources we need to check?
 6. Add community size to logging
 7. Add option to run an experiment manually + visualization
-8. Show graphs of
+8. Add numerical avg and variance to the graphs, remove the avg from the graph itself
 
 
 ##Technical

@@ -21,25 +21,13 @@
 
     <!-- Optimize mobile viewport -->
 
-    <title>Node/Angular Todo App</title>
+    <title>Epistemic nature simulator</title>
 
     <!-- SCROLLS -->
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <!--Add my own css-->
     <link rel="stylesheet" href="css/rules.css" type="text/css">
-    <!-- load bootstrap -->
-    <style>
-        html {
-            overflow-y: scroll;
-        }
 
-        body {
-            padding-top: 50px;
-        }
-
-        #todo-list {
-            margin-bottom: 30px;
-        }
-    </style>
 
     <script>
         //This will be called when the document loads
@@ -109,19 +97,14 @@
 
 </head>
 <!-- SET THE CONTROLLER AND GET ALL TODOS -->
-<body ng-controller="mainController">
+<body>
 <div class="container">
 
-<!-- HEADER AND TODO COUNT -->
-<div class="jumbotron text-center">
-    <div class="container">
-        <h1>Epistemic nature simulator</h1>
+<div class="page-header">
+    <h1>Non-responsive Bootstrap</h1>
 
-        <p>This is a template for a simple marketing or informational website. It includes a large callout called a
-            jumbotron and three supporting pieces of content. Use it as a starting point to create something more
-            unique.</p>
-        <!--<p><a class="btn btn-primary btn-lg" role="button">Learn more &raquo;</a></p>-->
-    </div>
+    <p class="lead">Disable the responsiveness of Bootstrap by fixing the width of the container and using the first
+        grid system tier.</p>
 </div>
 
 <div class="container">
@@ -342,24 +325,11 @@
 <hr>
 
 <footer>
-    <!--<iframe src="https://githubbadge.appspot.com/yossale"-->
-    <!--style="border: 0;height: 142px;width: 200px;overflow: hidden;" frameBorder="0"></iframe>-->
-    <!--<p>&copy; Yossi Ittach 2014</p>-->
+    <iframe src="https://githubbadge.appspot.com/yossale"
+            style="border: 0;height: 142px;width: 200px;overflow: hidden;" frameBorder="0"></iframe>
+    <p>&copy; Yossi Ittach 2014</p>
 </footer>
 
-<!-- TODO LIST -->
-<!--<div id="todo-list" class="row">-->
-<!--<div class="col-sm-4 col-sm-offset-4">-->
-
-<!--&lt;!&ndash; LOOP OVER THE TODOS IN $scope.todos &ndash;&gt;-->
-<!--<div class="checkbox" ng-repeat="todo in todos">-->
-<!--<label>-->
-<!--<input type="checkbox" ng-click="deleteTodo(todo._id)"> {{ todo.text }}-->
-<!--</label>-->
-<!--</div>-->
-
-<!--</div>-->
-<!--</div>-->
 
 </div>
 
