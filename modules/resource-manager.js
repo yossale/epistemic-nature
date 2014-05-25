@@ -5,11 +5,11 @@
 var Resource = require('./resource')
 
 function ResourceManager(requiredResources, config) {
-
     this.config = config;
     this.requiredResources = requiredResources;
-    this.resources = {}
-    this.resourceIdCounter = 0
+    this.resources = {};
+    this.resourceIdCounter = 0;
+    this.mockedResourceIdCounter = 0;
 
 }
 
@@ -26,7 +26,7 @@ ResourceManager.prototype.updateResources = function () {
     var currentResources = Object.keys(self.resources).length
 
     if (currentResources < self.requiredResources) {
-        var neededResources = self.requiredResources - currentResources
+        var neededResources = self.requiredResources - currentResources;
         for (i = 0; i < neededResources; i++) {
             var resourceId = self.resourceIdCounter++;
             var initSize = self.config.resource.initialResourceCapacity;
@@ -48,6 +48,10 @@ ResourceManager.prototype.getResourceByProbability = function (pResource) {
 
         return self.resources[curResources[randomResourceId]];
     }
+}
+
+ResourceManager.prototype.getMockedResource = function () {
+    return new Resource(--this.mockedResourceIdCounter, -1, 1);
 }
 
 module.exports = ResourceManager;

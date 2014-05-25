@@ -2,11 +2,13 @@
  * Created by yossale on 4/2/14.
  */
 
+var _ = require('underscore');
 var should = require('should');
-var Actions = require('../modules/actions')
-var ResourceManager = require('../modules/resource-manager')
+var Actions = require('../modules/actions');
+var ResourceManager = require('../modules/resource-manager');
 
-describe('Epistemic agent test suit', function () {
+
+describe('Resource manager test suit', function () {
 
     var costs = {}
     costs[Actions.CONSUME] = 1;
@@ -24,37 +26,42 @@ describe('Epistemic agent test suit', function () {
         var rm = new ResourceManager(3, config)
 
         Object.keys(rm.resources).length.should.equal(0);
-        Object.keys(rm.unassignedResources).length.should.equal(0);
         should.not.exist(rm.getResourceByProbability())
         rm.updateResources();
         Object.keys(rm.resources).length.should.equal(3);
-        Object.keys(rm.unassignedResources).length.should.equal(3);
+        _.values(rm.resources).forEach(function (resource) {
+            resource.capacity.should.be.above(99);
+        })
 
     })
 
     it('Test assignment', function () {
         //Should search
-        var config = { resources: {
-            initialSize: 100,
+        var config = { resource: {
+            initialResourceCapacity: 100,
             consumptionRate: 10
         }}
         var rm = new ResourceManager(3, config)
         rm.updateResources();
 
-        var firstResource = rm.getResourceByProbability(1.0)
-        rm.getResourceByProbability(1.0).should.equal(firstResource)
-        rm.getResourceByProbability(1.0).should.equal(firstResource)
-        rm.getResourceByProbability(1.0).should.not.equal(firstResource)
+        var varifiedRandomness = false;
+        var firstResource = rm.getResourceByProbability(1.0);
+        for (i = 0; i < 100; i++) {
+            var curResource = rm.getResourceByProbability(1.0);
+            if (curResource !== firstResource) {
+                varifiedRandomness = true;
+                break;
+            }
+        }
 
-        Object.keys(rm.unassignedResources).length.should.equal(2);
-        rm.updateResources();
-        Object.keys(rm.unassignedResources).length.should.equal(2);
+        varifiedRandomness.should.be.true;
+
     })
 
-    it.only('Test re-creation of resources', function () {
+    it('Test re-creation of resources', function () {
 
-        var config = { resources: {
-            initialSize: 20,
+        var config = { resource: {
+            initialResourceCapacity: 20,
             consumptionRate: 10
         }}
 
@@ -66,14 +73,11 @@ describe('Epistemic agent test suit', function () {
         resource.consume();
         resource.consume();
 
-        //check that we don't get a consumed resource
-        rm.getResourceByProbability(1.0).should.not.equal(resource);
-
-        //Check that it was removed
-        Object.keys(rm.unassignedResources).length.should.equal(2);
-
         rm.updateResources();
-        Object.keys(rm.unassignedResources).length.should.equal(3);
+
+        _.values(rm.resources).forEach(function (resource) {
+            resource.capacity.should.be.above(10);
+        })
     })
 
 })

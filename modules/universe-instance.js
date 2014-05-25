@@ -12,7 +12,7 @@ function UniverseInstance(config) {
 
     this.config = _.extend(defaultExperimentValues, config)
     this.agentIdCounter = 0;
-    this.community = []
+    this.community = [];
 
     this.maxSupportedCommunitySize = this.config.maxSupportedCommunitySize;
     this.initialCommunitySize = this.config.initialCommunitySize;
@@ -114,8 +114,22 @@ UniverseInstance.prototype.searchResource = function () {
     return this.resourceManager.getResourceByProbability(pFindingResource);
 }
 
-UniverseInstance.prototype.getRandomAgent = function () {
+UniverseInstance.prototype.getMockedResource = function () {
+    return this.resourceManager.getMockedResource();
+}
+
+
+UniverseInstance.prototype.getRandomAgent = function (askingAgent) {
+
+    if (this.getCommunitySize() === 1) {
+        return null;
+    }
+
     var randomAgent = Math.floor(Math.random() * this.getCommunitySize());
+
+    while (randomAgent === askingAgent) {
+        randomAgent = Math.floor(Math.random() * this.getCommunitySize());
+    }
     return this.community[randomAgent];
 }
 
@@ -130,7 +144,6 @@ function runExperiments(config, times) {
     }
 
     return statistics
-
 }
 
 module.exports = runExperiments;

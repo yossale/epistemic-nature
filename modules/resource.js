@@ -12,19 +12,19 @@ function Resource(resourceId, initialCapacity, consumptionRate){
 
 Resource.prototype.consume = function() {
 	if (this.isDepleted()) {
-		return null
+        return null;
 	} else {
-		this.capacity -= this.consumptionRate
-		return this.consumptionRate
+        this.capacity -= this.consumptionRate;
+        return this.consumptionRate;
 	}
 }
 
 Resource.prototype.isDepleted = function() {
-	return this.consumptionRate > this.capacity
+    return this.consumptionRate > this.capacity;
 }
 
 Resource.prototype.getId = function() {
-	return this.resourceId
+    return this.resourceId;
 }
 
-module.exports = Resource
+module.exports = Resource;

@@ -77,7 +77,7 @@ wstream.on('finish', function () {
 });
 
 
-wstream.write(['pBelieve', 'pLie', 'pSearch', 'pFind', 'avgTurns', 'maxTurns', 'avgCommunitySize'].join(",") + "\n");
+wstream.write(['pBelieve', 'pLie', 'pSearch', 'pFind', 'avgTurns', 'maxTurns', 'avgCommunitySize'].join(" ") + "\n");
 
 var experimentsCounter = 0;
 
@@ -105,9 +105,9 @@ Object.keys(probabilityOfFindingAResourceFunctions).forEach(function (prob) {
                     createNewAgentsWhenSurplus: false
                 }
 
-                var experimentName = [conf.agent.pBelieve.toFixed(3), conf.agent.pLie.toFixed(3), conf.agent.pSearch.toFixed(3), prob].join(",")
+                var experimentName = [conf.agent.pBelieve.toFixed(3), conf.agent.pLie.toFixed(3), conf.agent.pSearch.toFixed(3), prob].join(" ")
                 var expRes = runExperiment(conf, experimentName);
-                var message = [experimentName, expRes.avgTurns, expRes.maxTurns, expRes.avgCommunitySize].join(",");
+                var message = [experimentName, expRes.avgTurns, expRes.maxTurns, expRes.avgCommunitySize].join(" ");
                 wstream.write(message + "\n");
             }
         }
