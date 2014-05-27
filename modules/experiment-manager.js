@@ -7,8 +7,7 @@ var fs = require('fs');
 var experimentRunner = require('./universe-instance');
 var Actions = require('./actions');
 
-var statistics = {};
-var runsPerExperiment = 10;
+var runsPerExperiment = 1000;
 
 var runExperiment = function (expConfig, expName) {
 
@@ -38,33 +37,33 @@ var runExperiment = function (expConfig, expName) {
 
 var probabilityOfFindingAResourceFunctions = {
 
-    'fixed_1.0': function (communitySize) {
+    '1.0': function (communitySize) {
         return 1.0;
     },
-    'fixed_0.7': function (communitySize) {
+    '0.7': function (communitySize) {
         return 0.7;
     },
-    'fixed_0.5': function (communitySize) {
+    '0.5': function (communitySize) {
         return 0.5;
     },
-    'fixed_0.3': function (communitySize) {
+    '0.3': function (communitySize) {
         return 0.3;
     },
-    'fixed_0.1': function (communitySize) {
+    '0.1': function (communitySize) {
         return 0.1;
     },
-    'fixed_0.01': function (communitySize) {
+    '0.01': function (communitySize) {
         return 0.01;
     },
-    'fixed_0.001': function (communitySize) {
+    '0.001': function (communitySize) {
         return 0.001;
-    },
-    'variable_10*communitySize': function (communitySize) {
-        return (1 / (communitySize * 10));
-    },
-    'variable_communitySize^2': function (communitySize) {
-        return (1 / (Math.pow(communitySize, 2)));
     }
+//    'variable_10*communitySize': function (communitySize) {
+//        return (1 / (communitySize * 10));
+//    },
+//    'variable_communitySize^2': function (communitySize) {
+//        return (1 / (Math.pow(communitySize, 2)));
+//    }
 }
 
 var outputFileName = "./results_" + new Date().toJSON() + ".csv";
@@ -81,10 +80,10 @@ wstream.write(['pBelieve', 'pLie', 'pSearch', 'pFind', 'avgTurns', 'maxTurns', '
 
 var experimentsCounter = 0;
 
-Object.keys(probabilityOfFindingAResourceFunctions).forEach(function (prob) {
-    for (believe = 0; believe <= 10; believe++) {
-        for (lie = 0; lie <= 10; lie++) {
-            for (searchCost = 1; searchCost <= 20; searchCost++) {
+for (believe = 0; believe <= 10; believe++) {
+    for (lie = 0; lie <= 10; lie++) {
+        for (searchCost = 1; searchCost <= 20; searchCost++) {
+            Object.keys(probabilityOfFindingAResourceFunctions).forEach(function (prob) {
 
                 experimentsCounter++;
 
@@ -109,10 +108,10 @@ Object.keys(probabilityOfFindingAResourceFunctions).forEach(function (prob) {
                 var expRes = runExperiment(conf, experimentName);
                 var message = [experimentName, expRes.avgTurns, expRes.maxTurns, expRes.avgCommunitySize].join(" ");
                 wstream.write(message + "\n");
-            }
+            })
         }
     }
-})
+}
 
 wstream.end('Finished writing to stream\n');
 
