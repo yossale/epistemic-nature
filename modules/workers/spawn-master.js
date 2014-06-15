@@ -5,9 +5,9 @@
 var fs = require('fs');
 var process = require('child_process');
 
-for (believe = 0; believe <= 10; believe++) {
+for (believe = 0; believe <= 14; believe++) {
 
-    var ls = process.spawn('node', ['runExperimentForBelieveValue.js', 0.1 * believe]);
+    var ls = process.spawn('node', ['runExperimentForBelieveValue.js', 0.15 + (0.05 * believe)]);
 
     ls.stdout.on('data', function (data) {
         console.log('>>' + data);

@@ -7,6 +7,7 @@ var CONSTS = require('./consts');
 var ResourceManager = require('./resource-manager');
 var EpistemicAgent = require('./epistemic-agent');
 var defaultExperimentValues = require('./experiment_configurations/default-configuration');
+var std = 0.05;
 
 function UniverseInstance(config) {
 
@@ -42,7 +43,28 @@ function distributeResources(community, resourceManager) {
     }
 }
 
+var gaussianRand = function (mean, std) {
+
+    var u1 = Math.random();
+    var u2 = Math.random();
+    var normal = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+
+    normal = (normal * std) + mean;
+
+    if (normal > 1.0) {
+        normal = 1.0;
+    }
+    if (normal < 0.0) {
+        normal = 0.0;
+    }
+
+    return normal;
+}
+
+
 UniverseInstance.prototype.runSingleExperiment = function () {
+
+    console.log("Running universe: " + JSON.stringify(this.config));
 
     var self = this;
     var turnsCounter = 0;
@@ -103,7 +125,9 @@ UniverseInstance.prototype.addAgents = function (numUsers) {
 
 UniverseInstance.prototype.createAgent = function () {
     var agentId = this.agentIdCounter++;
-    return new EpistemicAgent(this, agentId, this.config.initialAgentEnergy, this.config.agent.pBelieve, this.config.agent.pLie, this.config.agent.pSearch, this.config.costs, this.config.agent.credibilityBias);
+    var pBelieve = gaussianRand(this.config.agent.pBelieve, std);
+    var pLie = gaussianRand(this.config.agent.pLie, std);
+    return new EpistemicAgent(this, agentId, this.config.initialAgentEnergy, pBelieve, pLie, this.config.agent.pSearch, this.config.costs, this.config.agent.credibilityBias);
 }
 
 

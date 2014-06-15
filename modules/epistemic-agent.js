@@ -16,6 +16,7 @@ function EpistemicAgent(experimentManager, agentId, energy, pBelieve, pLie, pSea
     this.costsTable = costs;
     this.currentResources = {};
     this.minimalEnergy = Math.min.apply(Math, _.values(costs));
+    this.pastInteractions = {};
 }
 
 EpistemicAgent.prototype.act = function () {
@@ -109,10 +110,12 @@ EpistemicAgent.prototype.askSomeone = function () {
     if (otherAgent) {
         var newResource = otherAgent.wouldYouShareResource();
         if (newResource) {
-            var weightedPBelieve = otherAgent.getCredibilityBias() * self.pBelieve;
+            var weightedPBelieve = self.getProbabilityBelievingAgent(otherAgent);
             if (Math.random() > (1.0 - weightedPBelieve)) {
                 self.addResource(newResource);
                 successful = true;
+                //Mocked resources have negative ids
+                self.updateInteractionsHistory(otherAgent, newResource.resourceId >= 0)
             } else {
                 //Don't believe him
             }
@@ -138,6 +141,47 @@ EpistemicAgent.prototype.wouldYouShareResource = function () {
     } else {
         return self.hasResources() ? _.values(self.currentResources)[0] : null;
     }
+}
+
+EpistemicAgent.prototype.updateInteractionsHistory = function (otherAgent, toldTruth) {
+
+    var self = this;
+
+    var history = self.pastInteractions[otherAgent];
+
+    if (!history) {
+        history = { pos: 0, neg: 0}
+        self.pastInteractions[otherAgent] = history;
+    }
+
+    if (toldTruth) {
+        history.pos++;
+    } else {
+        history.neg++;
+    }
+}
+
+EpistemicAgent.prototype.getProbabilityBelievingAgent = function (otherAgent) {
+    var self = this;
+
+    var userHistory = self.pastInteractions[otherAgent];
+
+    return self.computeBelieveProbabilityFromHistory(userHistory);
+}
+
+EpistemicAgent.prototype.computeBelieveProbabilityFromHistory = function (history) {
+
+    var self = this;
+
+    if (!history) {
+        history = {pos: 0, neg: 0}
+    }
+
+    var total = history.pos + history.neg;
+
+    var prob = (self.pBelieve + history.pos) / (total + 1);
+
+    return prob;
 }
 
 EpistemicAgent.prototype.getCredibilityBias = function () {
