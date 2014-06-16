@@ -44,6 +44,11 @@ function distributeResources(community, resourceManager) {
 
 UniverseInstance.prototype.runSingleExperiment = function () {
 
+<<<<<<< HEAD
+=======
+//    console.log("Running universe: " + JSON.stringify(this.config));
+
+>>>>>>> origin/master
     var self = this;
     var turnsCounter = 0;
 
