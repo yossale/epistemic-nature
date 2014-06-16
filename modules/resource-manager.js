@@ -28,7 +28,7 @@ ResourceManager.prototype.updateResources = function () {
     if (currentResources < self.requiredResources) {
         var neededResources = self.requiredResources - currentResources;
         for (i = 0; i < neededResources; i++) {
-            var resourceId = ++self.resourceIdCounter;
+            var resourceId = self.resourceIdCounter++;
             var initSize = self.config.resource.initialResourceCapacity;
             var consumptionRate = self.config.resource.consumptionRate;
             var resource = new Resource(resourceId, initSize, consumptionRate);

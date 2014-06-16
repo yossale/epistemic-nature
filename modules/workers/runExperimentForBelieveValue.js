@@ -19,6 +19,7 @@ var runExperiment = function (expConfig, expName) {
     var maxTurns = 0;
     var sumAvgCommunitySize = 0;
 
+
     var results = experimentRunner(expConfig, runsPerExperiment);
 
     for (index = 0; index < results.length; index++) {
@@ -59,12 +60,10 @@ var probabilityOfFindingAResourceFunctions = {
     }
 }
 
-
 var believe = parseFloat(process.argv[2]);
-
 console.log("Running for believe value: " + believe);
 
-var outputFileName = "./" + believe.toFixed(2) + "_results_per_" + runsPerExperiment + "_runs_" + new Date().toJSON() + ".ssv";
+var outputFileName = "./" + believe.toFixed(2) + "_results_" + new Date().toJSON() + ".ssv";
 
 var streamOptions = {encoding: 'utf8'}
 var wstream = fs.createWriteStream(outputFileName, streamOptions);
@@ -76,7 +75,7 @@ wstream.on('finish', function () {
 wstream.write(['pBelieve', 'pLie', 'pSearch', 'pFind', 'avgTurns', 'maxTurns', 'avgCommunitySize'].join(" ") + "\n");
 var experimentsCounter = 0;
 
-for (lie = 0; lie <= 14; lie++) {
+for (lie = 0; lie <= 10; lie++) {
     for (searchCost = 1; searchCost <= 20; searchCost++) {
         Object.keys(probabilityOfFindingAResourceFunctions).forEach(function (prob) {
 
@@ -89,8 +88,8 @@ for (lie = 0; lie <= 14; lie++) {
 
             var conf = {
                 agent: {
-                    pBelieve: believe,
-                    pLie: 0.15 + (0.05 * lie),
+                    pBelieve: 0.1 * believe,
+                    pLie: 0.1 * lie,
                     pSearch: (1 - costs[Actions.SEARCH] / (costs[Actions.SEARCH] + costs[Actions.ASK])),
                     credibilityBias: 1.0
                 },
