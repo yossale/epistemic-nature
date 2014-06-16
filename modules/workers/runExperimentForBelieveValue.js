@@ -7,7 +7,7 @@ var fs = require('fs');
 var experimentRunner = require('../universe-instance');
 var Actions = require('../actions');
 
-var runsPerExperiment = 100;
+var runsPerExperiment = 10000;
 
 var runExperiment = function (expConfig, expName) {
 
