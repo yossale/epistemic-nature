@@ -64,7 +64,7 @@ var gaussianRand = function (mean, std) {
 
 UniverseInstance.prototype.runSingleExperiment = function () {
 
-    console.log("Running universe: " + JSON.stringify(this.config));
+//    console.log("Running universe: " + JSON.stringify(this.config));
 
     var self = this;
     var turnsCounter = 0;
